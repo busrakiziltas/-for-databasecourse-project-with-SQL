@@ -1,0 +1,184 @@
+-- Kullanıcılar tablosu
+CREATE TABLE Kullanicilar (
+    kullanici_id NUMBER PRIMARY KEY,
+    kullanici_adi VARCHAR2(100) NOT NULL,
+    e_posta VARCHAR2(100) NOT NULL,
+    sifre VARCHAR2(100) NOT NULL
+);
+
+kullanıcılar tablosu veri ekleme 
+INSERT INTO Kullanicilar (kullanici_id, kullanici_adi, e_posta, sifre)
+VALUES (1, 'DENEME', 'deneme@example.com', 'deneme123');
+INSERT INTO Kullanicilar (kullanici_id, kullanici_adi, e_posta, sifre)
+VALUES (2, 'DENEME2', 'deneme2@example.com', 'deneme123');
+INSERT INTO Kullanicilar (kullanici_id, kullanici_adi, e_posta, sifre)
+VALUES (3, 'DENEME3', 'deneme3@example.com', 'deneme123');
+
+
+
+-- Kategoriler tablosu
+CREATE TABLE Kategoriler (
+    kategori_id NUMBER PRIMARY KEY,
+    kategori_adi VARCHAR2(100) NOT NULL,
+    ust_kategori_id NUMBER
+);
+--kategoriler tablosuna veri ekleme 
+INSERT INTO Kategoriler (kategori_id, kategori_adi, ust_kategori_id)
+VALUES (1, 'Ana Yemekler', NULL);
+
+INSERT INTO Kategoriler (kategori_id, kategori_adi, ust_kategori_id)
+VALUES (2, 'Tatlılar', NULL);
+
+INSERT INTO Kategoriler (kategori_id, kategori_adi, ust_kategori_id)
+VALUES (3, 'Çorbalar', 1);
+
+INSERT INTO Kategoriler (kategori_id, kategori_adi, ust_kategori_id)
+VALUES (4, 'Pilavlar', 1);
+
+
+-- Malzemeler tablosu
+ CREATE TABLE Malzemeler (
+    malzeme_id NUMBER PRIMARY KEY,
+    malzeme_adi VARCHAR2(100) NOT NULL
+);
+
+-- Malzemeler tablosu veri ekleme 
+INSERT INTO Malzemeler (malzeme_id, malzeme_adi)
+VALUES (1, 'Domates');
+
+INSERT INTO Malzemeler (malzeme_id, malzeme_adi)
+VALUES (2, 'Soğan');
+
+INSERT INTO Malzemeler (malzeme_id, malzeme_adi)
+VALUES (3, 'Pirinç');
+
+INSERT INTO Malzemeler (malzeme_id, malzeme_adi)
+VALUES (4, 'Tavuk Göğsü');
+
+-- Tarifler tablosu
+CREATE TABLE Tarifler (
+    tarif_id NUMBER PRIMARY KEY,
+    tarif_adi VARCHAR2(100) NOT NULL,
+    tarif_aciklama VARCHAR2(250) NOT NULL,
+    kategori_id NUMBER,
+    malzeme_id NUMBER,
+    tarif_hazirlama_suresi NUMBER,
+    tarif_pisirme_suresi NUMBER,
+    tarif_hazirlayan_id NUMBER,
+    tarif_resim VARCHAR2(100) NOT NULL,
+    FOREIGN KEY (tarif_hazirlayan_id) REFERENCES Kullanicilar(kullanici_id)
+);
+
+--tarifler tablosu veri ekleme
+INSERT INTO Tarifler (tarif_id, tarif_adi, tarif_aciklama, tarif_hazirlama_suresi, tarif_pisirme_suresi, tarif_hazirlayan_id, tarif_resim)
+VALUES (1, 'Mercimek Çorbası', 'Lezzetli mercimek çorbası tarifi', 20, 30, 1, 'mercimek_corbasi.jpg');
+
+INSERT INTO Tarifler (tarif_id, tarif_adi, tarif_aciklama, tarif_hazirlama_suresi, tarif_pisirme_suresi, tarif_hazirlayan_id, tarif_resim)
+VALUES (2, 'Yeşil Mercimek Çorbası', 'Lezzetli mercimek çorbası tarifi', 20, 30, 2, 'mercimek_corbasi.jpg');
+
+INSERT INTO Tarifler (tarif_id, tarif_adi, tarif_aciklama, tarif_hazirlama_suresi, tarif_pisirme_suresi, tarif_hazirlayan_id, tarif_resim)
+VALUES (3, 'Ezogelin Çorbası', 'Lezzetli mercimek çorbası tarifi', 20, 30, 1, 'mercimek_corbasi.jpg');
+
+-- Favori_Tarifler tablosu
+CREATE TABLE Favori_Tarifler (
+  favori_tarif_id NUMBER PRIMARY KEY,
+  kullanici_id NUMBER,
+  tarif_id NUMBER,
+  CONSTRAINT UC_dOy UNIQUE (kullanici_id, tarif_id),
+  FOREIGN KEY (kullanici_id) REFERENCES Kullanicilar(kullanici_id),
+  FOREIGN KEY (tarif_id) REFERENCES Tarifler(tarif_id)
+);
+
+-- Favori_Tarifler tablosu veri ekleme
+INSERT INTO Favori_Tarifler (favori_tarif_id ,kullanici_id, tarif_id)
+VALUES (1,1,1);
+INSERT INTO Favori_Tarifler (favori_tarif_id ,kullanici_id, tarif_id)
+VALUES (2,2,2);
+INSERT INTO Favori_Tarifler (favori_tarif_id ,kullanici_id, tarif_id)
+VALUES (3,3,3);
+
+-- Yorumlar tablosu
+CREATE TABLE Yorumlar (
+    yorum_id NUMBER PRIMARY KEY,
+    kullanici_id NUMBER,
+    tarif_id NUMBER,
+    yorum_metni VARCHAR2(500),
+    yorum_tarihi DATE,
+    FOREIGN KEY (kullanici_id) REFERENCES Kullanicilar(kullanici_id),
+    FOREIGN KEY (tarif_id) REFERENCES Tarifler(tarif_id)
+);
+
+-- Yorumlar tablosu veri ekleme
+INSERT INTO Yorumlar (yorum_id, kullanici_id, tarif_id, yorum_metni, yorum_tarihi)
+VALUES (1, 1, 1, 'Bu tarifi denedim, çok lezzetli oldu!', TO_DATE('2023-05-15', 'YYYY-MM-DD'));
+
+INSERT INTO Yorumlar (yorum_id, kullanici_id, tarif_id, yorum_metni, yorum_tarihi)
+VALUES (2, 2, 2, 'Pisirme suresi biraz daha uzun olabilir.', TO_DATE('2023-05-20', 'YYYY-MM-DD'));
+
+-- Oylar Tablosu
+CREATE TABLE Oylar (
+  OyID NUMBER PRIMARY KEY,
+  kullanici_id NUMBER,
+  tarif_id NUMBER,
+  oy_degeri NUMBER,
+  CONSTRAINT FK_Oy_Kullanicilar FOREIGN KEY (kullanici_id) REFERENCES Kullanicilar(kullanici_id),
+  CONSTRAINT FK_Oy_Tarifler FOREIGN KEY (tarif_id ) REFERENCES Tarifler(tarif_id ),
+  CONSTRAINT UC_Oy UNIQUE (kullanici_id, tarif_id )
+);
+
+oy tablosu veri ekleme
+
+INSERT INTO Oylar (OyID, KULLANICI_ID, TARIF_ID, oy_degeri)
+VALUES (1, 1, 1, 5);
+
+INSERT INTO Oylar (OyID, KULLANICI_ID, TARIF_ID, oy_degeri)
+VALUES (2, 2, 2, 3);
+INSERT INTO Oylar (OyID, KULLANICI_ID, TARIF_ID, oy_degeri)
+VALUES (3, 3, 3, 4);
+
+
+
+SQL SORGULAR 
+ALT SORGU ÖRNEĞİ
+SELECT t.* FROM Tarifler t WHERE t.tarif_id IN(SELECT f.tarif_id FROM Favori_Tarifler f
+  WHERE f.kullanici_id = (SELECT kullanici_id FROM Kullanicilar WHERE kullanici_adi = 'DENEME'))
+
+GROUP BY ÖRNEĞİ
+
+SELECT k.kategori_adi, COUNT(*) AS tarif_sayisi
+FROM Tarifler t
+JOIN Kategoriler k ON t.kategori_id = k.kategori_id
+GROUP BY k.kategori_adi;
+/////BUNDA "NO DATA FOUND" HATASI ALDIM DÜZELTİLMİŞ HALİ ///////
+
+SELECT k.kategori_adi, COUNT(t.tarif_id) AS tarif_sayisi
+FROM Kategoriler k
+LEFT JOIN Tarifler t ON t.kategori_id = k.kategori_id
+GROUP BY k.kategori_adi;           /////// Bu şekilde LEFT JOIN kullanarak Kategoriler tablosunu ana tablo olarak aldık ve Tarifler tablosunu bu tabloya sol birleştirme yaptık. Böylece kategorilerin hepsi görüntülenirken, eşleşen tarif sayısı 0 olarak gösterilecektir. Bu sayede "No data found" hatasını almıyoruz.////////
+
+
+tarih içeren sorgu
+
+SELECT COUNT(*) AS toplam_yorum_sayisi
+FROM yorumlar
+WHERE yorum_tarihi  BETWEEN DATE '2022-01-01' AND DATE '2023-12-31';
+
+update sorgu örneği
+
+update kullanicilar set sifre='1234' where kullanici_id=1
+
+alter table örneği
+ALTER TABLE Kullanicilar
+MODIFY kullanici_adi VARCHAR2(100);
+
+ALTER TABLE Kullanicilar
+ADD yeni_sutun VARCHAR2(50);
+
+
+
+
+
+
+
+
+
