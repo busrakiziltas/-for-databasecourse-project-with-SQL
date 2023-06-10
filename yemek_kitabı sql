@@ -173,12 +173,3 @@ MODIFY kullanici_adi VARCHAR2(100);
 
 ALTER TABLE Kullanicilar
 ADD yeni_sutun VARCHAR2(50);
-
-
-
-
-
-
-
-
-
